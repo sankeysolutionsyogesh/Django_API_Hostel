@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.utils import DataError
 from django.core.exceptions import ValidationError
 from django.db import transaction, DatabaseError
-
+import re
 
 @csrf_exempt
 #Main Route
@@ -119,10 +119,7 @@ def create_student(request):
     GENDER_CHOICES = ('M', 'F', 'O')
     data = json.loads(request.body)
    
-    
-    error_variable = ""
-    error_message = ""
-    
+    print(data)
     if 'student_name' in data and 'gender' in data and 'date_of_birth' in data and 'room_number' in data and 'guardian_contact' in data and 'is_paid' in data  and 'fees_paid' in data:
         student_name = data['student_name']
         gender = data['gender']
@@ -132,13 +129,14 @@ def create_student(request):
         fees_paid = data['fees_paid']
         is_paid = data['is_paid']
         
-        # if student_name.isalpha():
-        #     if gender in GENDER_CHOICES:
+     
         try:
-            if not student_name.isalpha():
+            pattern = r'^[a-zA-Z ]+$'
+            if not re.match(pattern, student_name):
                 raise ValidationError('Invalid input format for Student_name. It should be a string.')
-
-            
+                
+            if not gender in GENDER_CHOICES:
+                raise ValidationError('Invalid input format for Gender. It should be in (M for Male), (F for Female), (O for Others)')
                 
             student = Student(
                 student_name=student_name,
@@ -158,11 +156,6 @@ def create_student(request):
         except Exception as e:
             print("Database Error:", e)
             return JsonResponse({'error': str(e)}, status=400)
-
-            #     else:
-            #         return JsonResponse({'error': 'Invalid input format for Gender. It should be in (M for Male), (F for Female), (O for Others)'}, status=400)
-            # else:
-            #     return JsonResponse({'error': 'Invalid input format for Student_name. It should be a string.'}, status=400)
 
     else:
         return JsonResponse({'error': 'All fields are required'}, status=400)

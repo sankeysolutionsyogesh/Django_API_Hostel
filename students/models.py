@@ -23,6 +23,4 @@ class Student(models.Model):
     fees_paid = models.FloatField(default=0.0)
     is_paid = models.BooleanField()
     # room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    # room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='students')
-
-    
+    # room = models.ForeignKey(Room, on_delete=models.CASCADE)
